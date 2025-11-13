@@ -42,7 +42,7 @@ const zhCN = {
   },
   dialog: {
     edit_title: '编辑标题',
-    edit_game_name: '编辑游戏名称',
+    edit_game_name: '编辑对象名称',
     edit_main_title: '编辑主标题',
   },
   common: {
@@ -58,22 +58,22 @@ const zhCN = {
   },
   seo: {
     intro:
-      '游戏生涯个人喜好表（也常称作“游戏生涯喜好表”、“游戏喜好表”、“游戏喜好九宫格”）在线生成器。支持多语言标题与自定义格子，拖拽或搜索添加封面，一键导出高分辨率图片。',
+      'ACGMN+生涯个人喜好表（原作也常称作“游戏生涯喜好表”、“游戏喜好表”、“游戏喜好九宫格”）在线生成器。支持多语言标题与自定义格子，拖拽或搜索添加封面，一键导出高分辨率图片。',
   },
   search: {
-    title: '搜索游戏',
+    title: '搜索对象',
     source: '搜索源：',
-    placeholder: '输入游戏名称开始搜索',
+    placeholder: '输入对象名称开始搜索',
     searching: '搜索中',
     search: '搜索',
     retry: '重试',
-    no_results: '未找到相关游戏',
+    no_results: '未找到相关对象',
     try_keywords: '请尝试不同的关键词',
-    idle_hint: '输入游戏名称开始搜索',
+    idle_hint: '输入对象名称开始搜索',
     results_count: '找到 {count} 个结果',
     clear: '清除搜索',
     upload_image: '上传图片',
-    bangumi_tip: 'Bangumi 是专注动画、游戏的中文数据库，对 ACG 相关游戏支持较好。',
+    bangumi_tip: 'Bangumi 是专注动画、游戏的中文数据库，对 ACGMN+ 相关支持较好。',
     sgdb_tip: 'SteamGridDB 是游戏封面数据库，收录丰富，但仅支持英文名搜索。',
   },
 };
