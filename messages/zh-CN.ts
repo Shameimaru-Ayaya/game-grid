@@ -37,7 +37,7 @@ const zhCN = {
   ],
   ui: {
     tip_edit:
-      '提示：点击顶部标题、格子标题或游戏名称可以编辑；也可直接拖拽图片到格子中。',
+      '提示：点击顶部标题、格子标题或游戏名称可以编辑；也可直接拖拽图片到格子中。<<<Derivative Adaptation: Github@Shameimaru-Ayaya>>>',
     generate: '生成{title}！',
   },
   dialog: {
