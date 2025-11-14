@@ -11,7 +11,7 @@ const BANGUMI_USER_AGENT = process.env.BANGUMI_USER_AGENT;
 interface BangumiSubject {
   id: number;
   name: string;
-  type: number; // 条目类型：1=书籍，2=动画，3=音乐，4=游戏，6=三次元
+  type?: number; // 1=书籍, 2=动画, 3=音乐, 4=游戏, 6=三次元
   images?: {
     large?: string;
     common?: string;
@@ -59,18 +59,6 @@ async function fetchWithRetry(
   }
 }
 
-// 获取条目类型名称
-function getTypeName(type: number): string {
-  const typeMap: { [key: number]: string } = {
-    1: "书籍",
-    2: "动画",
-    3: "音乐",
-    4: "游戏",
-    6: "三次元",
-  };
-  return typeMap[type] || "未知";
-}
-
 // 处理单个条目的函数
 async function processSubject(
   subject: BangumiSubject,
@@ -82,19 +70,18 @@ async function processSubject(
     // HTML entities workaround
     subject.name = subject.name.replaceAll("&amp;", "&");
 
-    console.log(`处理条目: ${subject.id} (${subject.name}, 类型: ${getTypeName(subject.type)})`);
+    console.log(`处理条目: ${subject.id} (${subject.name})`);
 
     // 先发送条目的基本信息，不含图片
     controller.enqueue(
       new TextEncoder().encode(
         JSON.stringify({
-          type: "subjectStart",
-          subject: {
+          type: "gameStart",
+          game: {
             id: subject.id,
             name: subject.name,
-            type: subject.type,
-            typeName: getTypeName(subject.type),
             image: null,
+            subjectType: subject.type,
           },
         }) + "\n"
       )
@@ -152,13 +139,12 @@ async function processSubject(
     controller.enqueue(
       new TextEncoder().encode(
         JSON.stringify({
-          type: "subjectComplete",
-          subject: {
+          type: "gameComplete",
+          game: {
             id: subject.id,
             name: subject.name,
-            type: subject.type,
-            typeName: getTypeName(subject.type),
             image,
+            subjectType: subject.type,
           },
         }) + "\n"
       )
@@ -177,8 +163,8 @@ async function processSubject(
     controller.enqueue(
       new TextEncoder().encode(
         JSON.stringify({
-          type: "subjectError",
-          subjectId: subject.id,
+          type: "gameError",
+          gameId: subject.id,
           error: (error as Error).message,
         }) + "\n"
       )
@@ -208,13 +194,12 @@ export async function GET(request: Request) {
       );
 
       try {
-        console.log(`开始在Bangumi搜索全部类型条目: "${query}"`);
+        console.log(`开始在Bangumi搜索: "${query}"`);
 
         // 创建一个新的 AbortController 仅用于这次搜索请求
         const searchAbortController = new AbortController();
 
-        // 搜索全部类型条目 - 使用Bangumi API
-        // 不指定type参数，搜索所有类型
+        // 搜索所有类型的条目 - 移除type参数或设置为0表示搜索所有类型
         const searchUrl = `${BANGUMI_API_BASE_URL}/search/subject/${encodeURIComponent(
           query
         )}?responseGroup=small`;
@@ -260,13 +245,13 @@ export async function GET(request: Request) {
             new TextEncoder().encode(
               JSON.stringify({
                 type: "init",
-                total: Math.min(searchData.list.length, 15), // 增加到15个结果
+                total: Math.min(searchData.list.length, 10),
               }) + "\n"
             )
           );
 
-          // 处理前15个搜索结果
-          const results = searchData.list.slice(0, 15);
+          // 处理前10个搜索结果
+          const results = searchData.list.slice(0, 10);
           const successCountRef = { value: 0 };
 
           // 为详情请求创建单独的 AbortController
@@ -303,8 +288,8 @@ export async function GET(request: Request) {
                 type: "end",
                 message:
                   successCountRef.value > 0
-                    ? "所有条目数据已发送完成"
-                    : "未能获取条目封面，请重试",
+                    ? "所有数据已发送完成"
+                    : "未能获取封面，请重试",
                 successCount: successCountRef.value,
               }) + "\n"
             )
@@ -317,7 +302,7 @@ export async function GET(request: Request) {
             return;
           }
 
-          console.error("搜索条目失败:", searchError);
+          console.error("搜索失败:", searchError);
           controller.enqueue(
             new TextEncoder().encode(
               JSON.stringify({
