@@ -278,7 +278,6 @@ export function useCanvasRenderer({
             if (line2) {
               ctx.fillText(line2, x + cellWidth / 2, firstLineY + lineHeight)
             }
-              }
             }
           }
           
