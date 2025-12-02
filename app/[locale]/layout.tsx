@@ -24,18 +24,18 @@ export async function generateMetadata({ params }: { params: { locale: Locale } 
 
   const keywords = locale.startsWith('zh')
     ? [
-        '游戏生涯喜好表',
-        '游戏生涯个人喜好表',
-        '游戏喜好表',
-        '游戏九宫格',
-        '游戏喜好九宫格',
+        'ACGMN+生涯喜好表',
+        'ACGMN+生涯个人喜好表',
+        'ACGMN+喜好表',
+        'ACGMN+九宫格',
+        'ACGMN+喜好九宫格',
         '喜好表生成器',
       ]
     : undefined;
 
   return {
-    title: messages.meta?.title ?? 'GameGrid',
-    description: messages.meta?.description ?? 'Create your game preference grid',
+    title: messages.meta?.title ?? 'ACGMN+Grid',
+    description: messages.meta?.description ?? 'Create your ACGMN+ preference grid',
     keywords,
     robots: {
       index: true,
@@ -43,18 +43,18 @@ export async function generateMetadata({ params }: { params: { locale: Locale } 
     },
     openGraph: {
       type: 'website',
-      title: messages.meta?.title ?? 'GameGrid',
-      description: messages.meta?.description ?? 'Create your game preference grid',
+      title: messages.meta?.title ?? 'ACGMN+Grid',
+      description: messages.meta?.description ?? 'Create your ACGMN+ preference grid',
       url: `/${locale}`,
-      siteName: messages.global?.main_title ?? 'GameGrid',
+      siteName: messages.global?.main_title ?? 'ACGMN+Grid',
       locale,
       alternateLocale: locales.filter((l) => l !== locale),
       images: [`/${locale}/opengraph-image`],
     },
     twitter: {
       card: 'summary_large_image',
-      title: messages.meta?.title ?? 'GameGrid',
-      description: messages.meta?.description ?? 'Create your game preference grid',
+      title: messages.meta?.title ?? 'ACGMN+Grid',
+      description: messages.meta?.description ?? 'Create your ACGMN+ preference grid',
       images: [`/${locale}/twitter-image`],
     },
     alternates: {
