@@ -173,7 +173,7 @@ export function useCanvasRenderer({
           
           // 根据是否两行显示来调整字号
           let nameFontSize = CANVAS_CONFIG.cellNameFontSize
-          let lineHeight = nameFontSize + 4
+          let lineHeight = nameFontSize + 1 // 压缩行间距
           
           if (textWidth <= maxWidth) {
             // 单行显示
@@ -182,13 +182,12 @@ export function useCanvasRenderer({
               coverHeight +
               CANVAS_CONFIG.cellTitleMargin +
               baseCellTitleFont +
-              CANVAS_CONFIG.cellNameMargin +
-              nameFontSize
+              nameFontSize // 去掉 cellNameMargin
             ctx.fillText(gameName, x + cellWidth / 2, firstLineY)
           } else {
             // 需要两行显示,缩小字号以适应空间
             nameFontSize = Math.floor(CANVAS_CONFIG.cellNameFontSize * 0.85)
-            lineHeight = nameFontSize + 1
+            lineHeight = nameFontSize + 1 // 压缩行间距
             ctx.font = `${nameFontSize}px sans-serif`
             
             let line1 = ''
@@ -256,8 +255,7 @@ export function useCanvasRenderer({
               coverHeight +
               CANVAS_CONFIG.cellTitleMargin +
               baseCellTitleFont +
-              CANVAS_CONFIG.cellNameMargin +
-              nameFontSize
+              nameFontSize // 去掉 cellNameMargin
             
             // 绘制文字
             ctx.fillText(line1, x + cellWidth / 2, firstLineY)
