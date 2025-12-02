@@ -156,39 +156,80 @@ export function useCanvasRenderer({
         )
         ctx.textBaseline = prevBaseline
 
-        // 如果有游戏名称，绘制游戏名称
+        // 如果有游戏名称,绘制游戏名称
         if (cell.name) {
-          // 副标题使用 alphabetic 基线，配合基于字号的 Y 计算，避免偏下
+          // 副标题使用 alphabetic 基线,配合基于字号的 Y 计算,避免偏下
           const prevBaseline2 = ctx.textBaseline
           ctx.textBaseline = "alphabetic"
           ctx.fillStyle = "#4b5563" // 灰色文字
           ctx.font = `${CANVAS_CONFIG.cellNameFontSize}px sans-serif`
-
-          // 截断过长的游戏名称
-          let gameName = cell.name
-          let textWidth = ctx.measureText(gameName).width
+          
           const maxWidth = cellWidth - CANVAS_CONFIG.cellPadding * 4
-
-          if (textWidth > maxWidth) {
-            // 截断文本并添加省略号
-            let truncated = gameName
-            while (textWidth > maxWidth && truncated.length > 0) {
-              truncated = truncated.slice(0, -1)
-              textWidth = ctx.measureText(truncated + "...").width
+          const gameName = cell.name
+          const textWidth = ctx.measureText(gameName).width
+          
+          // 计算第一行文字的Y坐标
+          const firstLineY = coverY +
+            coverHeight +
+            CANVAS_CONFIG.cellTitleMargin +
+            baseCellTitleFont +
+            CANVAS_CONFIG.cellNameMargin +
+            CANVAS_CONFIG.cellNameFontSize
+          
+          if (textWidth <= maxWidth) {
+            // 单行显示
+            ctx.fillText(gameName, x + cellWidth / 2, firstLineY)
+          } else {
+            // 尝试分成两行
+            const words = gameName.split(' ')
+            let line1 = ''
+            let line2 = ''
+            let line1Width = 0
+            
+            // 逐词添加到第一行,直到超出宽度
+            for (let i = 0; i < words.length; i++) {
+              const testLine = line1 + (line1 ? ' ' : '') + words[i]
+              const testWidth = ctx.measureText(testLine).width
+              
+              if (testWidth <= maxWidth) {
+                line1 = testLine
+                line1Width = testWidth
+              } else {
+                // 第一行已满,剩余的放到第二行
+                line2 = words.slice(i).join(' ')
+                break
+              }
             }
-            gameName = truncated + "..."
+            
+            // 如果第二行为空(说明单词太长),则强制在第一行截断
+            if (!line2) {
+              let truncated = gameName
+              while (ctx.measureText(truncated + '...').width > maxWidth && truncated.length > 0) {
+                truncated = truncated.slice(0, -1)
+              }
+              ctx.fillText(truncated + '...', x + cellWidth / 2, firstLineY)
+            } else {
+              // 检查第二行是否溢出
+              const line2Width = ctx.measureText(line2).width
+              if (line2Width > maxWidth) {
+                // 第二行溢出,截断第二行
+                let truncated = line2
+                while (ctx.measureText(truncated + '...').width > maxWidth && truncated.length > 0) {
+                  truncated = truncated.slice(0, -1)
+                }
+                line2 = truncated + '...'
+              }
+              
+              // 绘制两行文字
+              ctx.fillText(line1, x + cellWidth / 2, firstLineY)
+              ctx.fillText(
+                line2,
+                x + cellWidth / 2,
+                firstLineY + CANVAS_CONFIG.cellNameFontSize + 4
+              )
+            }
           }
-
-          ctx.fillText(
-            gameName,
-            x + cellWidth / 2,
-            coverY +
-              coverHeight +
-              CANVAS_CONFIG.cellTitleMargin +
-              baseCellTitleFont +
-              CANVAS_CONFIG.cellNameMargin +
-              CANVAS_CONFIG.cellNameFontSize,
-          )
+          
           ctx.textBaseline = prevBaseline2
         }
       })
