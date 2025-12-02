@@ -16,8 +16,8 @@ export default async function Image({
 }) {
   const { locale } = params
   const messages = await getMessages(locale)
-  const title = messages?.meta?.title ?? 'GameGrid'
-  const description = messages?.meta?.description ?? 'Create your game preference grid'
+  const title = messages?.meta?.title ?? 'ACGMN+Grid'
+  const description = messages?.meta?.description ?? 'Create your ACGMN+ preference grid'
 
   return new ImageResponse(
     (
@@ -56,7 +56,7 @@ export default async function Image({
             color: '#1f2937',
           }}
         >
-          <span>gamegrid.shatranj.space</span>
+          <span>acgmn-grid.vercel.app</span>
           <span style={{ opacity: 0.75 }}>{locale}</span>
         </div>
       </div>
