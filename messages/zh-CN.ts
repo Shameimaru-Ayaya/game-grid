@@ -37,7 +37,7 @@ const zhCN = {
   ],
   ui: {
     tip_edit:
-      '提示：点击顶部标题、格子标题或游戏名称可以编辑；也可直接拖拽图片到格子中。<Original Work: Github @ SomiaWhiteRing>',
+      '提示：点击顶部标题、格子标题或作品名称可以编辑；也可直接拖拽图片到格子中。作品名称支持自动换行，也可输入＼n强制换行一次。Original Work: Github @ SomiaWhiteRing',
     generate: '生成{title}！',
   },
   dialog: {
