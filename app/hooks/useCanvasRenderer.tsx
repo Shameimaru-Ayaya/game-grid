@@ -164,19 +164,36 @@ export function useCanvasRenderer({
           ctx.fillStyle = "#4b5563" // 灰色文字
           
           const maxWidth = cellWidth - CANVAS_CONFIG.cellPadding * 4
-          const gameName = cell.name
+          let gameName = cell.name
+          
+          // 检查是否包含\n符，如果有则在第一个\n处强制换行
+          const newlineIndex = gameName.indexOf('\n')
+          let hasManualNewline = false
+          let beforeNewline = ''
+          let afterNewline = ''
+          
+          if (newlineIndex !== -1) {
+            hasManualNewline = true
+            beforeNewline = gameName.substring(0, newlineIndex)
+            afterNewline = gameName.substring(newlineIndex + 1)
+            // 移除后续的所有\n符
+            afterNewline = afterNewline.replace(/\n/g, '')
+          }
+          
           const textWidth = ctx.measureText(gameName).width
           
-          // 检测前20个字符中是否包含空格(用于判断是否为英文/拉丁文本)
-          const checkPrefix = gameName.substring(0, 20)
-          const hasSpaces = checkPrefix.includes(' ')
+          // 新的识别逻辑：检测全文是否有连续3个或以上字母且前30个字符出现空格
+          const hasConsecutiveLetters = /[a-zA-Z]{3,}/.test(gameName)
+          const checkPrefix = gameName.substring(0, 30)
+          const hasSpacesInPrefix = checkPrefix.includes(' ')
+          const shouldSplitBySpace = hasConsecutiveLetters && hasSpacesInPrefix
           
           // 根据是否两行显示来调整字号
           let nameFontSize = CANVAS_CONFIG.cellNameFontSize
           let lineHeight = nameFontSize + 1 // 压缩行间距
           
-          if (textWidth <= maxWidth) {
-            // 单行显示
+          if (textWidth <= maxWidth && !hasManualNewline) {
+            // 单行显示（无手动换行符）
             ctx.font = `${nameFontSize}px sans-serif`
             const firstLineY = coverY +
               coverHeight +
@@ -191,82 +208,110 @@ export function useCanvasRenderer({
             lineHeight = nameFontSize + 1 // 压缩行间距
             ctx.font = `${nameFontSize}px sans-serif`
             
-            // 缩小字号后重新测量，可能可以放在一行了
-            const newTextWidth = ctx.measureText(gameName).width
-            if (newTextWidth <= maxWidth) {
-              // 缩小后能放在一行，动态调整字号占满空间
-              const optimalFontSize = Math.floor((maxWidth / newTextWidth) * nameFontSize)
-              // 限制字号不超过原始大小
-              const finalFontSize = Math.min(optimalFontSize, CANVAS_CONFIG.cellNameFontSize)
-              ctx.font = `${finalFontSize}px sans-serif`
-              
-              const firstLineY = coverY +
-                coverHeight +
-                CANVAS_CONFIG.cellTitleMargin +
-                baseCellTitleFont +
-                CANVAS_CONFIG.cellNameMargin +
-                finalFontSize
-              ctx.fillText(gameName, x + cellWidth / 2, firstLineY)
-            } else {
-              // 缩小后仍需两行
-            
             let line1 = ''
             let line2 = ''
             
-            if (hasSpaces) {
-              // 英文/拉丁文本:按空格分词
-              const words = gameName.split(' ')
+            if (hasManualNewline) {
+              // 如果有手动换行符，直接在\n处分割
+              line1 = beforeNewline
+              line2 = afterNewline
               
-              for (let i = 0; i < words.length; i++) {
-                const testLine = line1 + (line1 ? ' ' : '') + words[i]
-                const testWidth = ctx.measureText(testLine).width
-                
-                if (testWidth <= maxWidth) {
-                  line1 = testLine
-                } else {
-                  line2 = words.slice(i).join(' ')
-                  break
+              // 检查第一行是否溢出
+              if (ctx.measureText(line1).width > maxWidth) {
+                let testLine1 = line1
+                while (ctx.measureText(testLine1).width > maxWidth && testLine1.length > 0) {
+                  testLine1 = testLine1.slice(0, -1)
                 }
+                line1 = testLine1 + '...'
               }
               
-              // 如果第二行为空(单词太长),按字符截断
-              if (!line2) {
+              // 检查第二行是否溢出
+              if (ctx.measureText(line2).width > maxWidth) {
+                let testLine2 = line2
+                while (ctx.measureText(testLine2).width > maxWidth && testLine2.length > 0) {
+                  testLine2 = testLine2.slice(0, -1)
+                }
+                line2 = testLine2 + '...'
+              }
+            } else {
+              // 没有手动换行符，按照新规则处理
+              // 缩小字号后重新测量，可能可以放在一行了
+              const newTextWidth = ctx.measureText(gameName).width
+              if (newTextWidth <= maxWidth) {
+                // 缩小后能放在一行，动态调整字号占满空间
+                const optimalFontSize = Math.floor((maxWidth / newTextWidth) * nameFontSize)
+                // 限制字号不超过原始大小
+                const finalFontSize = Math.min(optimalFontSize, CANVAS_CONFIG.cellNameFontSize)
+                ctx.font = `${finalFontSize}px sans-serif`
+                
+                const firstLineY = coverY +
+                  coverHeight +
+                  CANVAS_CONFIG.cellTitleMargin +
+                  baseCellTitleFont +
+                  CANVAS_CONFIG.cellNameMargin +
+                  finalFontSize
+                ctx.fillText(gameName, x + cellWidth / 2, firstLineY)
+                
+                ctx.textBaseline = prevBaseline2
+                return // 直接返回，不需要继续处理
+              }
+              
+              // 缩小后仍需两行
+              if (shouldSplitBySpace) {
+                // 按空格分词
+                const words = gameName.split(' ')
+                
+                for (let i = 0; i < words.length; i++) {
+                  const testLine = line1 + (line1 ? ' ' : '') + words[i]
+                  const testWidth = ctx.measureText(testLine).width
+                  
+                  if (testWidth <= maxWidth) {
+                    line1 = testLine
+                  } else {
+                    line2 = words.slice(i).join(' ')
+                    break
+                  }
+                }
+                
+                // 如果第二行为空(单词太长),按字符截断
+                if (!line2) {
+                  for (let i = 0; i < gameName.length; i++) {
+                    const testLine = gameName.substring(0, i + 1)
+                    if (ctx.measureText(testLine).width > maxWidth) {
+                      line1 = gameName.substring(0, i)
+                      line2 = gameName.substring(i)
+                      break
+                    }
+                  }
+                }
+              } else {
+                // CJK填充：按字符填充满一行
                 for (let i = 0; i < gameName.length; i++) {
                   const testLine = gameName.substring(0, i + 1)
-                  if (ctx.measureText(testLine).width > maxWidth) {
+                  const testWidth = ctx.measureText(testLine).width
+                  
+                  if (testWidth > maxWidth) {
                     line1 = gameName.substring(0, i)
                     line2 = gameName.substring(i)
                     break
                   }
                 }
-              }
-            } else {
-              // CJK文本:按字符填充
-              for (let i = 0; i < gameName.length; i++) {
-                const testLine = gameName.substring(0, i + 1)
-                const testWidth = ctx.measureText(testLine).width
                 
-                if (testWidth > maxWidth) {
-                  line1 = gameName.substring(0, i)
-                  line2 = gameName.substring(i)
-                  break
+                // 如果循环结束都没超出,说明全部可以放在第一行
+                if (!line2) {
+                  line1 = gameName
                 }
               }
               
-              // 如果循环结束都没超出,说明全部可以放在第一行
-              if (!line2) {
-                line1 = gameName
-              }
-            }
-            
-            // 检查第二行是否溢出,如需截断
-            if (line2) {
-              let testLine2 = line2
-              while (ctx.measureText(testLine2).width > maxWidth && testLine2.length > 0) {
-                testLine2 = testLine2.slice(0, -1)
-              }
-              if (testLine2.length < line2.length) {
-                line2 = testLine2 + '...'
+              // 检查第二行是否溢出,如需截断
+              if (line2) {
+                let testLine2 = line2
+                while (ctx.measureText(testLine2).width > maxWidth && testLine2.length > 0) {
+                  testLine2 = testLine2.slice(0, -1)
+                }
+                if (testLine2.length < line2.length) {
+                  line2 = testLine2 + '...'
+                }
               }
             }
             
@@ -282,9 +327,7 @@ export function useCanvasRenderer({
             if (line2) {
               ctx.fillText(line2, x + cellWidth / 2, firstLineY + lineHeight)
             }
-            }
-          }
-          
+          }          
           ctx.textBaseline = prevBaseline2
         }
       })
