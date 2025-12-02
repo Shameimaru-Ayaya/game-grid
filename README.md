@@ -1,5 +1,7 @@
 # ＡＣＧＭＮ＋ Grid - ＡＣＧＭＮ＋生涯个人喜好表
 
+**Use for free! → [Online Editor](https://acgmn-grid.vercel.app/)**
+
 ## 〇、摘要
 
 ###### ＊[游戏生涯个人喜好表的开源复刻版](https://github.com/SomiaWhiteRing/game-grid)［公元２０２５年１１月１３日（ＵＴＣ＋０９:００，東京）］的ＡＣＧＭＮ＋ Fork 版＊
