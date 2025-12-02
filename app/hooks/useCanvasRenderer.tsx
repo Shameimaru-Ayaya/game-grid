@@ -165,7 +165,6 @@ export function useCanvasRenderer({
           
           const maxWidth = cellWidth - CANVAS_CONFIG.cellPadding * 4
           const gameName = cell.name
-          const textWidth = ctx.measureText(gameName).width
           
           // 检测前20个字符中是否包含空格(用于判断是否为英文/拉丁文本)
           const checkPrefix = gameName.substring(0, 20)
@@ -175,9 +174,19 @@ export function useCanvasRenderer({
           let nameFontSize = CANVAS_CONFIG.cellNameFontSize
           let lineHeight = nameFontSize + 1 // 压缩行间距
           
+          // 先用默认字号测量
+          ctx.font = `${nameFontSize}px sans-serif`
+          let textWidth = ctx.measureText(gameName).width
+          
           if (textWidth <= maxWidth) {
-            // 单行显示
+            // 单行显示 - 动态放大字号以占满整行
+            // 计算可以放大到的最大字号
+            const scaleRatio = maxWidth / textWidth
+            const maxNameFontSize = Math.floor(nameFontSize * scaleRatio)
+            // 设置一个合理的上限，避免过大
+            nameFontSize = Math.min(maxNameFontSize, CANVAS_CONFIG.cellNameFontSize * 1.3)
             ctx.font = `${nameFontSize}px sans-serif`
+            
             const firstLineY = coverY +
               coverHeight +
               CANVAS_CONFIG.cellTitleMargin +
