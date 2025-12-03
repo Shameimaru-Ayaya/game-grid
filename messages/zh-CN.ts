@@ -37,7 +37,7 @@ const zhCN = {
   ],
   ui: {
     tip_edit:
-      'Ciallo～(∠・ω＜ )⌒★　提示：点击顶部标题、格子标题或作品名称可以编辑；也可直接拖拽图片到格子中。作品名称支持自动换行，也可输入＼n强制换行一次。原作: Github @ SomiaWhiteRing；借物表：游戏生涯九宫格：https://github.com/SomiaWhiteRing/game-grid/ ；动画生涯九宫格：https://github.com/itorr/anime-grid',
+      'Ciallo～(∠・ω＜ )⌒★\n提示：点击顶部标题、格子标题或作品名称可以编辑；也可直接拖拽图片到格子中。\n作品名称支持自动换行，也可输入＼n强制换行一次。\n原作: Github @ SomiaWhiteRing；借物表：游戏生涯九宫格：https://github.com/SomiaWhiteRing/game-grid/ ；动画生涯九宫格：https://github.com/itorr/anime-grid',
     generate: '生成{title}！',
   },
   dialog: {
