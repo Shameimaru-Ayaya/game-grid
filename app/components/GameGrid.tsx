@@ -405,7 +405,7 @@ export function GameGrid({ initialCells, onUpdateCells }: GameGridProps) {
         }}
       />
       
-      <p className="mt-4 px-4 text-sm text-gray-500 break-words max-w-3xl mx-auto">
+      <p className="mt-4 px-4 text-sm text-gray-500 break-words max-w-4xl mx-auto">
         {parseTextWithLinks(t('ui.tip_edit'))}
       </p>
 
