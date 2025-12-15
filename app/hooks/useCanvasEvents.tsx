@@ -35,7 +35,7 @@ export function useCanvasEvents({
     const canvas = e.currentTarget;
     if (!canvas) return;
 
-    // 获取点击坐标（考虑缩放）
+    // 获取点击坐标(考虑缩放)
     const rect = canvas.getBoundingClientRect();
     const x = (e.clientX - rect.left) / scale;
     const y = (e.clientY - rect.top) / scale;
@@ -55,13 +55,13 @@ export function useCanvasEvents({
       
       // 根据点击区域执行不同操作
       if (clickArea === "image") {
-        // 点击图片区域，打开搜索对话框
+        // 点击图片区域,打开搜索对话框
         openSearchDialog(cellId);
       } else if (clickArea === "title") {
-        // 点击标题区域，编辑标题
+        // 点击标题区域,编辑标题
         openTitleEditDialog(cellId);
       } else if (clickArea === "name") {
-        // 点击游戏名称区域，编辑游戏名称
+        // 点击游戏名称区域,编辑游戏名称
         openNameEditDialog(cellId);
       }
     }
@@ -71,7 +71,7 @@ export function useCanvasEvents({
   const handleDragOver = (e: React.DragEvent<HTMLCanvasElement>) => {
     e.preventDefault()
 
-    // 获取拖拽坐标（考虑缩放）
+    // 获取拖拽坐标(考虑缩放)
     const rect = e.currentTarget.getBoundingClientRect()
     const x = (e.clientX - rect.left) / scale
     const y = (e.clientY - rect.top) / scale
@@ -109,7 +109,7 @@ export function useCanvasEvents({
   const handleDrop = async (e: React.DragEvent<HTMLCanvasElement>) => {
     e.preventDefault()
 
-    // 获取拖拽坐标（考虑缩放）
+    // 获取拖拽坐标(考虑缩放)
     const rect = e.currentTarget.getBoundingClientRect()
     const x = (e.clientX - rect.left) / scale
     const y = (e.clientY - rect.top) / scale
@@ -152,8 +152,8 @@ export function useCanvasEvents({
         // 确保图片已完全加载
         await ensureImageLoaded(croppedImageUrl);
 
-        // 生成唯一标识，确保React检测到图片URL的变化
-        // 这里我们添加一个时间戳参数，确保即使是相同的图片也会被认为是新的URL
+        // 生成唯一标识,确保React检测到图片URL的变化
+        // 这里我们添加一个时间戳参数,确保即使是相同的图片也会被认为是新的URL
         const uniqueImageUrl = `${croppedImageUrl}#t=${Date.now()}`;
 
         // 更新单元格数据
@@ -181,7 +181,7 @@ export function useCanvasEvents({
     }
   }
 
-  // 计算base64数据的文件大小（字节）
+  // 计算base64数据的文件大小(字节)
   const getBase64Size = (base64String: string): number => {
     // 移除data URL前缀
     const base64Data = base64String.split(',')[1] || base64String;
@@ -190,8 +190,8 @@ export function useCanvasEvents({
     return (base64Data.length * 3) / 4 - padding;
   }
 
-  // 生成图片
-  const generateImage = (canvasRef: React.RefObject<HTMLCanvasElement>) => {
+  // 生成图片 - 注意这里改为async函数
+  const generateImage = async (canvasRef: React.RefObject<HTMLCanvasElement>) => {
     const canvas = canvasRef.current
     if (!canvas) return
 
@@ -201,7 +201,7 @@ export function useCanvasEvents({
       let fileName = "";
       let fileSize = 0;
 
-      // 获取主标题（从localStorage）
+      // 获取主标题(从localStorage)
       let baseFileName = "ACGMN+生涯个人喜好表";
       try {
         const savedConfig = localStorage.getItem('gameGridGlobalConfig');
@@ -215,8 +215,8 @@ export function useCanvasEvents({
         console.error("获取主标题失败:", error);
       }
 
-      // 尝试不同的质量和格式，确保文件大小在5MB以内
-      // 首先尝试高质量JPEG（质量0.95）
+      // 尝试不同的质量和格式,确保文件大小在5MB以内
+      // 首先尝试高质量JPEG(质量0.95)
       dataUrl = canvas.toDataURL("image/jpeg", 0.95);
       fileSize = getBase64Size(dataUrl);
       console.log(`尝试JPEG质量0.95: ${(fileSize / 1024 / 1024).toFixed(2)}MB`);
@@ -224,7 +224,7 @@ export function useCanvasEvents({
       if (fileSize <= maxFileSize) {
         fileName = `${baseFileName}.jpg`;
       } else {
-        // 如果太大，尝试质量0.9
+        // 如果太大,尝试质量0.9
         dataUrl = canvas.toDataURL("image/jpeg", 0.9);
         fileSize = getBase64Size(dataUrl);
         console.log(`尝试JPEG质量0.9: ${(fileSize / 1024 / 1024).toFixed(2)}MB`);
@@ -232,7 +232,7 @@ export function useCanvasEvents({
         if (fileSize <= maxFileSize) {
           fileName = `${baseFileName}.jpg`;
         } else {
-          // 如果还是太大，尝试质量0.85
+          // 如果还是太大,尝试质量0.85
           dataUrl = canvas.toDataURL("image/jpeg", 0.85);
           fileSize = getBase64Size(dataUrl);
           console.log(`尝试JPEG质量0.85: ${(fileSize / 1024 / 1024).toFixed(2)}MB`);
@@ -240,7 +240,7 @@ export function useCanvasEvents({
           if (fileSize <= maxFileSize) {
             fileName = `${baseFileName}.jpg`;
           } else {
-            // 如果还是太大，尝试质量0.8
+            // 如果还是太大,尝试质量0.8
             dataUrl = canvas.toDataURL("image/jpeg", 0.8);
             fileSize = getBase64Size(dataUrl);
             console.log(`尝试JPEG质量0.8: ${(fileSize / 1024 / 1024).toFixed(2)}MB`);
@@ -255,7 +255,7 @@ export function useCanvasEvents({
               fileName = `${baseFileName}.jpg`;
               
               if (fileSize > maxFileSize) {
-                console.warn(`警告：图片大小 ${(fileSize / 1024 / 1024).toFixed(2)}MB 超过了5MB限制`);
+                console.warn(`警告:图片大小 ${(fileSize / 1024 / 1024).toFixed(2)}MB 超过了5MB限制`);
               }
             }
           }
@@ -263,7 +263,6 @@ export function useCanvasEvents({
       }
 
       // 创建下载链接
-
       // 使用 Blob 对象URL提高Safari等浏览器的兼容性
       const blob = await (async () => {
         const res = await fetch(dataUrl);
@@ -275,7 +274,7 @@ export function useCanvasEvents({
       link.download = fileName;
       link.href = objectUrl;
       link.rel = "noopener";
-      // 某些浏览器（例如Safari）要求元素在DOM中才能触发点击
+      // 某些浏览器(例如Safari)要求元素在DOM中才能触发点击
       document.body.appendChild(link);
       link.click();
       // 清理DOM与URL对象
