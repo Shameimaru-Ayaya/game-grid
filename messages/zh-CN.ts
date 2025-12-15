@@ -51,7 +51,7 @@ const zhCN = {
     close: '关闭',
   },
   footer: {
-    made_with: '二次创作 with Claude',
+    made_with: '二次创作 with Claude & Trae',
     if_useful_star: '如果觉得对你有用请点 →',
     powered_by: 'Powered by Bangumi & SteamGridDB',
     official_link: '唯一指定链接：acgmn-grid.vercel.app',
