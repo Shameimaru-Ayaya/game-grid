@@ -264,27 +264,27 @@ export function useCanvasEvents({
 
       // 创建下载链接
 
-+      // 使用 Blob 对象URL提高Safari等浏览器的兼容性
-+      const blob = await (async () => {
-+        const res = await fetch(dataUrl);
-+        return await res.blob();
-+      })();
-+      const objectUrl = URL.createObjectURL(blob);
-+
-+      const link = document.createElement("a");
-+      link.download = fileName;
-+      link.href = objectUrl;
-+      link.rel = "noopener";
-+      // 某些浏览器（例如Safari）要求元素在DOM中才能触发点击
-+      document.body.appendChild(link);
-+      link.click();
-+      // 清理DOM与URL对象
-+      setTimeout(() => {
-+        try {
-+          document.body.removeChild(link);
-+        } catch {}
-+        URL.revokeObjectURL(objectUrl);
-+      }, 0);
+      // 使用 Blob 对象URL提高Safari等浏览器的兼容性
+      const blob = await (async () => {
+        const res = await fetch(dataUrl);
+        return await res.blob();
+      })();
+      const objectUrl = URL.createObjectURL(blob);
+
+      const link = document.createElement("a");
+      link.download = fileName;
+      link.href = objectUrl;
+      link.rel = "noopener";
+      // 某些浏览器（例如Safari）要求元素在DOM中才能触发点击
+      document.body.appendChild(link);
+      link.click();
+      // 清理DOM与URL对象
+      setTimeout(() => {
+        try {
+          document.body.removeChild(link);
+        } catch {}
+        URL.revokeObjectURL(objectUrl);
+      }, 0);
 
       console.log(`图片已生成并下载: ${fileName}, 大小: ${(fileSize / 1024 / 1024).toFixed(2)}MB`);
     } catch (error) {
